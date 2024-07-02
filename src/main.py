@@ -47,22 +47,19 @@ if __name__=='__main__':
     if args.experiments_directory: utils.makedir_if_not_exist(args.experiments_directory)
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    #weights = torchvision.models.ResNet50_Weights.IMAGENET1K_V1
-    #model = torchvision.models.resnet50(weights=weights).to(device)
-    #model = torchvision.models.resnet50().to(device)
     model = torchvision.models.resnet50()
-    #model.fc = torch.nn.Linear(in_features=2048, out_features=1000, bias=True)
     utils.apply_bounded_spectral_norm(model, spec_norm_bound=6.0)
-    model.fc = models.RandomFeatureGaussianProcess(in_features=2048, out_features=1000)
+    model.fc = torch.nn.Linear(in_features=2048, out_features=1000, bias=True)
+    #model.fc = models.RandomFeatureGaussianProcess(in_features=2048, out_features=1000)
     model.to(device)
     criterion = torch.nn.CrossEntropyLoss()
-    other_params = [param for name, param in model.named_parameters() if 'fc' not in name]
-    fc_params = [param for name, param in model.named_parameters() if 'fc' in name]
-    optimizer = torch.optim.SGD([
-        {'params': other_params, 'weight_decay': 1e-4},
-        {'params': fc_params, 'weight_decay': 0.0},
-    ], lr=args.lr_0, momentum=0.9)
-    #optimizer = torch.optim.SGD(model.parameters(), lr=args.lr_0, momentum=0.9, weight_decay=1e-4)
+    #other_params = [param for name, param in model.named_parameters() if 'fc' not in name]
+    #fc_params = [param for name, param in model.named_parameters() if 'fc' in name]
+    #optimizer = torch.optim.SGD([
+    #    {'params': other_params, 'weight_decay': 1e-4},
+    #    {'params': fc_params, 'weight_decay': 0.0},
+    #], lr=args.lr_0, momentum=0.9)
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr_0, momentum=0.9, weight_decay=1e-4)
     
     augmented_train_transform = torchvision.transforms.Compose([
         torchvision.transforms.ToTensor(),
