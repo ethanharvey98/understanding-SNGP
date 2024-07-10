@@ -1,7 +1,5 @@
 import argparse
 import os
-import random
-import numpy as np
 import pandas as pd
 import wandb
 # PyTorch
@@ -15,13 +13,15 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser(description='main.py')    
     parser.add_argument('--epochs', default=90, help='Number of epochs (default: 90)', type=int)
     parser.add_argument('--experiments_directory', default='', help='Directory to save experiments (default: \'\')', type=str)
-    parser.add_argument('--cycles', default=1, help='Number of cycles (default: 1)', type=int)
     parser.add_argument('--lr_0', default=0.1, help='Initial learning rate (default: 0.1)', type=float)
     parser.add_argument('--model_name', default='test', help='Model name (default: \'test\')', type=str)
     parser.add_argument('--num_workers', default=16, help='Number of workers (default: 16)', type=int)
     parser.add_argument('--random_state', default=42, help='Random state (default: 42)', type=int)
+    parser.add_argument('--spec_norm_bound', default=6.0, help='Spectral normalization bound (default: 6.0)', type=float)
+    parser.add_argument('--tau', default=1e-4, help='Classification head weight decay (default: 1e-4)', type=float)
     parser.add_argument('--wandb', action='store_true', default=False, help='Whether or not to log to wandb')
     parser.add_argument('--wandb_project', default='test', help='Wandb project name (default: \'test\')', type=str)
+    parser.add_argument('--weight_decay', default=1e-4, help='Weight decay (default: 1e-4)', type=float)
     args = parser.parse_args()
     
     if args.wandb:
@@ -33,13 +33,15 @@ if __name__=='__main__':
             config={
                 'epochs': args.epochs,
                 'experiments_directory': args.experiments_directory,
-                'cycles': args.cycles,
                 'lr_0': args.lr_0,
                 'model_name': args.model_name,
                 'num_workers': args.num_workers,
                 'random_state': args.random_state,
+                'spec_norm_bound': args.spec_norm_bound,
+                'tau': args.tau,
                 'wandb': args.wandb,
                 'wandb_project': args.wandb_project,
+                'weight_decay': args.weight_decay,
             }
         )
         
@@ -47,19 +49,20 @@ if __name__=='__main__':
     if args.experiments_directory: utils.makedir_if_not_exist(args.experiments_directory)
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    model = torchvision.models.resnet50()
-    utils.apply_bounded_spectral_norm(model, spec_norm_bound=6.0)
-    model.fc = torch.nn.Linear(in_features=2048, out_features=1000, bias=True)
-    #model.fc = models.RandomFeatureGaussianProcess(in_features=2048, out_features=1000)
+    weights = torchvision.models.ResNet50_Weights.IMAGENET1K_V1
+    model = torchvision.models.resnet50(weights=weights)
+    #model = torchvision.models.resnet50()
+    utils.apply_bounded_spectral_norm(model, spec_norm_bound=args.spec_norm_bound)
+    #model.fc = torch.nn.Linear(in_features=2048, out_features=1000, bias=True)
+    model.fc = models.RandomFeatureGaussianProcess(in_features=2048, out_features=1000)
     model.to(device)
     criterion = torch.nn.CrossEntropyLoss()
-    #other_params = [param for name, param in model.named_parameters() if 'fc' not in name]
-    #fc_params = [param for name, param in model.named_parameters() if 'fc' in name]
-    #optimizer = torch.optim.SGD([
-    #    {'params': other_params, 'weight_decay': 1e-4},
-    #    {'params': fc_params, 'weight_decay': 0.0},
-    #], lr=args.lr_0, momentum=0.9)
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr_0, momentum=0.9, weight_decay=1e-4)
+    other_params = [param for name, param in model.named_parameters() if 'fc' not in name]
+    fc_params = [param for name, param in model.named_parameters() if 'fc' in name]
+    optimizer = torch.optim.SGD([
+        {'params': other_params, 'weight_decay': args.weight_decay},
+        {'params': fc_params, 'weight_decay': args.tau},
+    ], lr=args.lr_0, momentum=0.9)
     
     augmented_train_transform = torchvision.transforms.Compose([
         torchvision.transforms.ToTensor(),
@@ -117,6 +120,12 @@ if __name__=='__main__':
         train_metrics = utils.train_one_epoch(model, criterion, optimizer, augmented_train_loader)
         lr_scheduler.step()
         val_metrics = utils.evaluate(model, criterion, val_loader)
+        
+        if epoch == args.epochs-1:
+            model.fc.record_cov_inv = True
+            _ = utils.evaluate(model, criterion, train_loader)
+            model.fc.record_cov_inv = False
+            model.fc.invert_cov_inv()
 
         if args.wandb:
             wandb.log({

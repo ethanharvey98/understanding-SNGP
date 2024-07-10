@@ -13,7 +13,7 @@ conda activate bdl-transfer-learning
 
 # Define an array of commands
 experiments=(
-    "python ../src/main.py --epochs=90 --experiments_directory='/cluster/tufts/hugheslab/eharve06/understanding-SNGP/experiments/ImageNet'  --lr_0=0.1 --model_name='DNN-SN_random_state=1001_spec_norm_bound=6.0' --random_state=1001 --wandb --wandb_project='understanding-SNGP'"
+    "python ../src/main.py --epochs=30 --experiments_directory='/cluster/tufts/hugheslab/eharve06/understanding-SNGP/experiments/ImageNet'  --lr_0=0.001 --model_name='PyTorch_SNGP_random_state=1001_spec_norm_bound=6.0_tau=1e-6' --random_state=1001 --tau=1e-6 --wandb --wandb_project='understanding-SNGP'"
 )
 
 eval "${experiments[$SLURM_ARRAY_TASK_ID]}"
