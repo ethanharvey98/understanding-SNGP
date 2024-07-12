@@ -7,7 +7,7 @@ import torch
 import torchvision
 # Importing our custom module(s)
 import models
-import utils
+import utils_v2 as utils
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description='main.py')    
@@ -57,12 +57,15 @@ if __name__=='__main__':
     model.fc = models.RandomFeatureGaussianProcess(in_features=2048, out_features=1000)
     model.to(device)
     criterion = torch.nn.CrossEntropyLoss()
-    other_params = [param for name, param in model.named_parameters() if 'fc' not in name]
-    fc_params = [param for name, param in model.named_parameters() if 'fc' in name]
-    optimizer = torch.optim.SGD([
-        {'params': other_params, 'weight_decay': args.weight_decay},
-        {'params': fc_params, 'weight_decay': args.tau},
-    ], lr=args.lr_0, momentum=0.9)
+    
+    optimizer = torch.optim.SGD(model.fc.parameters(), lr=args.lr_0, momentum=0.9, weight_decay=args.tau)
+    
+    #other_params = [param for name, param in model.named_parameters() if 'fc' not in name]
+    #fc_params = [param for name, param in model.named_parameters() if 'fc' in name]
+    #optimizer = torch.optim.SGD([
+    #    {'params': other_params, 'weight_decay': args.weight_decay},
+    #    {'params': fc_params, 'weight_decay': args.tau},
+    #], lr=args.lr_0, momentum=0.9)
     
     augmented_train_transform = torchvision.transforms.Compose([
         torchvision.transforms.ToTensor(),
