@@ -15,12 +15,12 @@ class RandomFeatureGaussianProcess(torch.nn.Module):
         self.linear = torch.nn.Linear(in_features=self.rank, out_features=self.out_features, bias=False)
                                         
     def featurize(self, h):
-        features = torch.nn.functional.linear(h, -(1/self.lengthscale**2) * self.feature_weight, self.feature_bias)
-        return (2 / self.rank) ** 0.5 * torch.cos(features)
+        features = torch.nn.functional.linear(h, -(1/self.lengthscale) * self.feature_weight, self.feature_bias)
+        return (2/self.rank)**0.5 * torch.cos(features)
         
-    def forward(self, h, return_variance=True):
+    def forward(self, h):
         batch_size, hidden_dim = h.shape
-        features = self.outputscale*self.featurize(h)
+        features = self.outputscale * self.featurize(h)
         logits = self.linear(features)
         return logits
 
