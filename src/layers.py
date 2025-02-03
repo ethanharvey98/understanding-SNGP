@@ -15,7 +15,7 @@ class RandomFeatureGaussianProcess(torch.nn.Module):
         self.linear = torch.nn.Linear(in_features=self.rank, out_features=self.out_features, bias=False)
                                         
     def featurize(self, h):
-        features = torch.nn.functional.linear(h, -(1/self.lengthscale) * self.feature_weight, self.feature_bias)
+        features = torch.nn.functional.linear(h, (1/self.lengthscale) * self.feature_weight, self.feature_bias)
         return (2/self.rank)**0.5 * torch.cos(features)
         
     def forward(self, h):
