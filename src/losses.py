@@ -25,5 +25,5 @@ class DataEmphasizedELBo(torch.nn.Module):
         term2 = (1/lambda_star) * loc_diff_norm
         term3 = (len(params) * torch.log(lambda_star)) - (len(params) * torch.log(torch.nn.functional.softplus(self.sigma_param)**2))
         kl = (1/2) * (term1 + term2 - len(params) + term3)
-        return {'kl': (1/N) * kl, 'lambda_star': lambda_star, 'loss':  nll + (1/self.kappa) * (1/N) * kl, 'nll': nll}
+        return {'kl': kl, 'lambda_star': lambda_star, 'loss':  nll + (1/self.kappa) * (1/N) * kl, 'nll': nll}
     
