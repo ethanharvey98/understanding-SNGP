@@ -1,9 +1,8 @@
-import math
 # PyTorch
 import torch
 
 class RandomFeatureGaussianProcess(torch.nn.Module):
-    def __init__(self, in_features, out_features, lengthscale=math.sqrt(20), outputscale=1.0, rank=1024):
+    def __init__(self, in_features, out_features, lengthscale=20, outputscale=1.0, rank=1024):
         super().__init__()
         self.in_features = in_features
         self.out_features = out_features

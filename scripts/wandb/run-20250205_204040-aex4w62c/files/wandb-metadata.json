@@ -1,0 +1,98 @@
+{
+  "os":  "Linux-3.10.0-1127.el7.x86_64-x86_64-with-glibc2.17",
+  "python":  "3.12.5",
+  "startedAt":  "2025-02-06T01:40:40.310848Z",
+  "args":  [
+    "--batch_size=32",
+    "--epochs=30",
+    "--experiments_directory=/cluster/tufts/hugheslab/eharve06/understanding-SNGP/experiments/ImageNet",
+    "--kappa=19.948244061859228",
+    "--lr_0=0.1",
+    "--model_name=RFF_epochs=30_lr_0=0.1_random_state=1001",
+    "--num_workers=16",
+    "--random_state=1001",
+    "--wandb",
+    "--wandb_project=understanding-SNGP"
+  ],
+  "program":  "/cluster/tufts/hugheslab/eharve06/understanding-SNGP/scripts/../src/main_ImageNet.py",
+  "codePath":  "src/main_ImageNet.py",
+  "git":  {
+    "remote":  "git@github.com:ethanharvey98/understanding-SNGP.git",
+    "commit":  "741585f9526839b15428e6f6b73ab8771ce4a6d6"
+  },
+  "email":  "Ethan.Harvey@tufts.edu",
+  "root":  "/cluster/tufts/hugheslab/eharve06/understanding-SNGP/scripts",
+  "host":  "s1cmp003.pax.tufts.edu",
+  "username":  "eharve06",
+  "executable":  "/cluster/tufts/hugheslabkp/eharve06/miniconda3/envs/l3d_2024f_cuda12_1/bin/python",
+  "cpu_count":  64,
+  "cpu_count_logical":  128,
+  "gpu":  "[NVIDIA A100 80GB PCIe]",
+  "gpu_count":  1,
+  "disk":  {
+    "/":  {
+      "total":  "26201600000",
+      "used":  "5784829952"
+    }
+  },
+  "memory":  {
+    "total":  "1081629364224"
+  },
+  "cpu":  {
+    "count":  64,
+    "countLogical":  128
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA A100 80GB PCIe",
+      "memoryTotal":  "85899345920",
+      "cudaCores":  6912,
+      "architecture":  "Ampere"
+    }
+  ],
+  "slurm":  {
+    "array_job_id":  "11463749",
+    "array_task_count":  "3",
+    "array_task_id":  "0",
+    "array_task_max":  "2",
+    "array_task_min":  "0",
+    "array_task_step":  "1",
+    "cluster_name":  "pax",
+    "conf":  "/etc/slurm/slurm.conf",
+    "cpus_on_node":  "16",
+    "gpus_on_node":  "1",
+    "gtids":  "0",
+    "job_account":  "default",
+    "job_cpus_per_node":  "16",
+    "job_end_time":  "1739410830",
+    "job_gid":  "6607",
+    "job_gpus":  "1",
+    "job_id":  "11463753",
+    "job_nodelist":  "s1cmp003",
+    "job_num_nodes":  "1",
+    "job_partition":  "gpu",
+    "job_qos":  "normal",
+    "job_start_time":  "1738806030",
+    "job_uid":  "32875",
+    "job_user":  "eharve06",
+    "jobid":  "11463753",
+    "localid":  "0",
+    "mem_per_node":  "65536",
+    "nnodes":  "1",
+    "node_aliases":  "(null)",
+    "nodeid":  "0",
+    "nodelist":  "s1cmp003",
+    "nprocs":  "16",
+    "ntasks":  "16",
+    "prio_process":  "0",
+    "procid":  "0",
+    "submit_dir":  "/cluster/tufts/hugheslab/eharve06/understanding-SNGP/scripts",
+    "submit_host":  "login-prod-01.pax.tufts.edu",
+    "task_pid":  "91476",
+    "tasks_per_node":  "16",
+    "topology_addr":  "s1cmp003",
+    "topology_addr_pattern":  "node",
+    "working_cluster":  "pax:slurm-prod-03.pax.tufts.edu:6820:9984:109"
+  },
+  "cudaVersion":  "12.2"
+}
