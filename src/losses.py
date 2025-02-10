@@ -10,7 +10,7 @@ class ERMLoss(torch.nn.Module):
         nll = self.criterion(logits, labels)
         return {'loss': nll, 'nll': nll}
 
-class DataEmphasizedELBo(torch.nn.Module):
+class KappaELBoLoss(torch.nn.Module):
     def __init__(self, kappa, sigma_param, criterion=torch.nn.CrossEntropyLoss()):
         super().__init__()
         self.criterion = criterion

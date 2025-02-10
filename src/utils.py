@@ -170,7 +170,7 @@ def use_posterior(self, flag):
         if isinstance(child, layers.VariationalLinear):
             child.use_posterior = flag
             
-def flatten_params(model, excluded_params=['lengthscale', 'outputscale', 'sigma_param']):
+def flatten_params(model, excluded_params=['parametrizations.lengthscale.original', 'parametrizations.outputscale.original', 'sigma_param']):
     return torch.cat([param.view(-1) for name, param in model.named_parameters() if name not in excluded_params])
 
 def train_one_epoch(model, criterion, optimizer, dataloader, lr_scheduler=None, num_classes=10, num_samples=1):
